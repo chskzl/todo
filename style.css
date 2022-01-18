@@ -1,0 +1,18 @@
+.mainwin {
+	background-color: rgba(0,0,0,0.95);
+}
+
+.ta {
+	background-color: rgba(0,0,0,0.0);
+	color: #FFFFFF;
+	caret-color: white;
+	padding: 8px;
+}
+
+.ta * {
+	background-color: rgba(0,0,0,0.0);
+}
+
+.ta * selection {
+	background-color: lightseagreen;
+}

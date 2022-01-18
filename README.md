@@ -1,2 +1,2 @@
 # todo
-minimal gtk-based list application
+minimal gtk-based todo list
