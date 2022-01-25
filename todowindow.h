@@ -2,22 +2,21 @@
 #define GTKMM_TODOWINDOW_H
 
 #include <gtkmm.h>
+#include <fstream>
 
 class TodoWindow : public Gtk::Window
 {
 public:
-	TodoWindow();
+	TodoWindow(std::string file_path, std::string style_path);
 	virtual ~TodoWindow();
 
 protected:
 
 	// file io funcs
 	void get_list_from_file();
-	void write_back_to_file();
+	bool write_back_to_file();
 
 	bool on_window_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state);
-
-	bool update_timer();
 
 	Gtk::Box m_VBox;
 
@@ -25,6 +24,9 @@ protected:
 	Gtk::TextView m_TextView;
 
 	Glib::RefPtr<Gtk::TextBuffer> m_refTextBuffer;
+
+	std::string file_path;
+	std::string style_path;
 };
 
 #endif //GTKMM_TODOWINDOW_H

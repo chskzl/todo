@@ -1,10 +1,24 @@
 #include "todowindow.h"
 #include <iostream>
-#include <fstream>
 #include <string>
 
-TodoWindow::TodoWindow() : m_VBox(Gtk::Orientation::VERTICAL)
+TodoWindow::TodoWindow(std::string file_path, std::string style_path) : m_VBox(Gtk::Orientation::VERTICAL)
 {
+
+	//-----------------
+
+	this->style_path = style_path;
+	this->file_path = file_path;
+	if (this->style_path == "")
+		this->style_path = "style.css";
+	if (this->file_path == "")
+		this->file_path = "todo.txt";
+
+
+	std::cout << this->file_path;
+
+	//-----------------
+
 	set_title("ToDo");
 	set_default_size(300, 500);
 
@@ -29,11 +43,11 @@ TodoWindow::TodoWindow() : m_VBox(Gtk::Orientation::VERTICAL)
 	add_controller(controller);
 
 	// idle func
-	Glib::signal_timeout().connect( sigc::mem_fun(*this, &TodoWindow::update_timer), 1000 );
+	Glib::signal_timeout().connect( sigc::mem_fun(*this, &TodoWindow::write_back_to_file), 1000 );
 
 	// create css provider
 	auto css = Gtk::CssProvider::create();
-	css->load_from_path("style.css");
+	css->load_from_path(this->style_path);
 	get_style_context()->add_provider_for_display(Gdk::Display::get_default(), 
 	                                             css, 
 	                                             GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -45,16 +59,16 @@ TodoWindow::TodoWindow() : m_VBox(Gtk::Orientation::VERTICAL)
 	m_TextView.get_style_context()->add_class("ta");
 }
 
-TodoWindow::~TodoWindow()
-{
-}
+
+TodoWindow::~TodoWindow() {}
+
 
 void TodoWindow::get_list_from_file() {
-	std::ifstream inf{ "todo.txt" };
+	std::ifstream inf{ this->file_path };
 
 	// create file if it doesnt exist
 	if (!inf) {
-		std::ofstream outf{ "todo.txt"};
+		std::ofstream outf{ this->file_path };
 	}
 
 	// read data from file and put it in string
@@ -69,12 +83,29 @@ void TodoWindow::get_list_from_file() {
 	// put string data into the text buffer
 	m_refTextBuffer = Gtk::TextBuffer::create();
 	m_refTextBuffer->set_text(listStr);
+
+	inf.close();
 }
 
-void TodoWindow::write_back_to_file() {
-	std::ofstream outf { "todo.txt" };
-	outf << m_refTextBuffer->get_text();
+
+bool TodoWindow::write_back_to_file() {
+	std::ofstream ofs;
+
+	this->file_path = file_path;
+
+	ofs.open(file_path, std::ofstream::out);
+
+	if (!ofs) {
+		std::cout << "failed to open file\n";
+		exit(EXIT_FAILURE);
+	}
+
+	ofs << m_refTextBuffer->get_text();
+	ofs.close();
+
+	return true;
 }
+
 
 bool TodoWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state) {
 	if(keyval == GDK_KEY_Escape)
@@ -88,9 +119,4 @@ bool TodoWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType st
 
 	//the event has not been handled
 	return false;
-}
-
-bool TodoWindow::update_timer() {
-	write_back_to_file();
-	return true;
 }
