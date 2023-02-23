@@ -60,7 +60,9 @@ TodoWindow::TodoWindow(std::string file_path, std::string style_path) : m_VBox(G
 }
 
 
-TodoWindow::~TodoWindow() {}
+TodoWindow::~TodoWindow() {
+	write_back_to_file();
+}
 
 
 void TodoWindow::get_list_from_file() {
