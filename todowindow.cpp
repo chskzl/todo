@@ -12,7 +12,7 @@ TodoWindow::TodoWindow(std::string file_path, std::string style_path) : m_VBox(G
 	if (this->style_path == "")
 		this->style_path = "style.css";
 	if (this->file_path == "")
-		this->file_path = "todo.txt";
+		this->file_path = ".todo";
 
 
 	std::cout << this->file_path;
